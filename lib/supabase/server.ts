@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import type { Database } from "./types";
 
@@ -26,15 +27,11 @@ export async function createServerSupabaseClient() {
   );
 }
 
+// Untyped service client — hand-written Database types lack Relationships metadata
+// required by @supabase/supabase-js v2 inference. Regenerate via `supabase gen types`.
 export function createServiceClient() {
-  return createServerClient<Database>(
+  return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      cookies: {
-        getAll: () => [],
-        setAll: () => {},
-      },
-    }
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 }

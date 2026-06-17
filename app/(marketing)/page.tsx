@@ -80,10 +80,24 @@ export default function LandingPage() {
           style={{ marginTop: 36, display: "flex", gap: 16, flexWrap: "wrap" }}
         >
           <Link
-            href="/demo"
+            href="/signup"
             style={{
               background: "#1A1814",
               color: "#F6F3EE",
+              padding: "12px 28px",
+              textDecoration: "none",
+              fontSize: 13,
+              letterSpacing: "0.06em",
+              display: "inline-block",
+            }}
+          >
+            Start your registry
+          </Link>
+          <Link
+            href="/demo"
+            style={{
+              border: "1px solid #DDD9D0",
+              color: "#1A1814",
               padding: "12px 28px",
               textDecoration: "none",
               fontSize: 13,
