@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { decryptEstate } from "@/lib/intake/client-crypto";
+import { generatePreviewShare2, share2ToBase64url } from "@/lib/kit/preview-share2";
 import type { AssembledWill } from "@/skills/clause-assembly-skill/types";
 import type { EstateJson } from "@/skills/intake-skill/estate-schema";
 
@@ -64,6 +65,48 @@ export default function WillPage() {
     }
     setError("");
     setConfirmed(true);
+  };
+
+  const downloadKit = async () => {
+    if (!will || !encryptedEstate) {
+      setError("Generate a will draft first.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const estate: EstateJson = await decryptEstate(encryptedEstate, passphrase);
+      const share2 = await generatePreviewShare2();
+      const res = await fetch("/api/kit/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          estate,
+          will,
+          share2ForKitB64: share2ToBase64url(share2),
+          preview: true,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? "Kit download failed");
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `banyan-execution-kit.pdf`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Kit download failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const generateWill = async () => {
@@ -252,21 +295,38 @@ export default function WillPage() {
       )}
 
       {will && (
-        <footer
-          style={{
-            marginTop: 24,
-            padding: 16,
-            borderTop: "1px solid #DDD9D0",
-            fontSize: 11,
-            color: "#999",
-            textAlign: "center",
-          }}
-        >
-          Clause library v{will.clause_library_version} · {will.religion_branch} branch ·{" "}
-          {will.clause_ids.length} clauses · hash {will.clause_set_hash.slice(0, 12)}…
-          <br />
-          Placeholder clauses — production kit issuance requires lawyer sign-off.
-        </footer>
+        <div style={{ marginTop: 24, textAlign: "center" }}>
+          <button
+            onClick={downloadKit}
+            disabled={loading}
+            style={{
+              padding: "12px 28px",
+              background: loading ? "#CCC" : "#B8902A",
+              color: "#1A1814",
+              border: "none",
+              cursor: loading ? "not-allowed" : "pointer",
+              fontSize: 13,
+              letterSpacing: "0.04em",
+              marginBottom: 16,
+            }}
+          >
+            {loading ? "Preparing kit…" : "Download execution kit (PDF)"}
+          </button>
+          <footer
+            style={{
+              padding: 16,
+              borderTop: "1px solid #DDD9D0",
+              fontSize: 11,
+              color: "#999",
+            }}
+          >
+            Clause library v{will.clause_library_version} · {will.religion_branch} branch ·{" "}
+            {will.clause_ids.length} clauses · hash {will.clause_set_hash.slice(0, 12)}…
+            <br />
+            Preview kit includes a sealed Recovery Code page. Production issuance requires lawyer
+            sign-off and vault setup (PR-8).
+          </footer>
+        </div>
       )}
     </main>
   );
