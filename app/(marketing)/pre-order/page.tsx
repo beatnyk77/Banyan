@@ -2,12 +2,6 @@
 import { useState } from "react";
 import Link from "next/link";
 
-declare global {
-  interface Window {
-    Razorpay: new (options: Record<string, unknown>) => { open(): void };
-  }
-}
-
 export default function PreOrderPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", referralCode: "" });
   const [loading, setLoading] = useState(false);

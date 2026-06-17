@@ -42,6 +42,9 @@ export default function DashboardLayout({
         <Link href="/vault" style={navLinkStyle}>
           Vault
         </Link>
+        <Link href="/billing" style={navLinkStyle}>
+          Billing
+        </Link>
       </nav>
       {children}
     </div>
