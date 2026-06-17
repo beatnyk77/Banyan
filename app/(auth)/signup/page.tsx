@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ConsentCapture } from "@/components/consent-capture";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SignupPage() {
@@ -11,6 +12,7 @@ export default function SignupPage() {
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState<"form" | "consent">("form");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,7 +21,7 @@ export default function SignupPage() {
     setError("");
 
     const supabase = createClient();
-    const { data, error: authError } = await supabase.auth.signUp({
+    const { error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { full_name: fullName } },
@@ -31,6 +33,11 @@ export default function SignupPage() {
       return;
     }
 
+    setLoading(false);
+    setStep("consent");
+  };
+
+  const handleConsent = () => {
     router.push("/intake");
     router.refresh();
   };
@@ -58,54 +65,58 @@ export default function SignupPage() {
             marginBottom: 8,
           }}
         >
-          Create account
+          {step === "form" ? "Create account" : "One more step"}
         </h1>
         <p style={{ fontSize: 13, color: "#777", marginBottom: 24 }}>
-          Start building your family asset registry.
+          {step === "form"
+            ? "Start building your family asset registry."
+            : "Please review and confirm how we process your data."}
         </p>
 
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <input
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            required
-            placeholder="Full name"
-            style={inputStyle}
-          />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            placeholder="Email"
-            style={inputStyle}
-          />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={8}
-            placeholder="Password (min 8 characters)"
-            style={inputStyle}
-          />
-          <p style={{ fontSize: 11, color: "#999", lineHeight: 1.5, margin: 0 }}>
-            By creating an account, you consent to Banyan (FoundersHQ LLP) processing your
-            personal data for succession document generation under the DPDP Act, 2023.
+        {step === "form" ? (
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <input
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+              placeholder="Full name"
+              style={inputStyle}
+            />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="Email"
+              style={inputStyle}
+            />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={8}
+              placeholder="Password (min 8 characters)"
+              style={inputStyle}
+            />
+            {error && <p style={{ fontSize: 13, color: "#C44", margin: 0 }}>{error}</p>}
+            <button type="submit" disabled={loading} style={buttonStyle}>
+              {loading ? "Creating…" : "Create account"}
+            </button>
+          </form>
+        ) : (
+          <ConsentCapture onConsent={handleConsent} />
+        )}
+
+        {step === "form" && (
+          <p style={{ fontSize: 13, color: "#777", marginTop: 20 }}>
+            Already have an account?{" "}
+            <Link href="/login" style={{ color: "#1A1814" }}>
+              Sign in
+            </Link>
           </p>
-          {error && <p style={{ fontSize: 13, color: "#C44", margin: 0 }}>{error}</p>}
-          <button type="submit" disabled={loading} style={buttonStyle}>
-            {loading ? "Creating…" : "Create account"}
-          </button>
-        </form>
-
-        <p style={{ fontSize: 13, color: "#777", marginTop: 20 }}>
-          Already have an account?{" "}
-          <Link href="/login" style={{ color: "#1A1814" }}>
-            Sign in
-          </Link>
-        </p>
+        )}
       </div>
     </main>
   );
