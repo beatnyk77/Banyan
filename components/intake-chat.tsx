@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { EstateJson } from "@/skills/intake-skill/estate-schema";
 import { createEmptyEstate } from "@/skills/intake-skill/empty-estate";
@@ -266,9 +267,23 @@ export function IntakeChat({ passphrase }: IntakeChatProps) {
           <p style={{ fontSize: 15, color: "#1A1814", marginBottom: 12 }}>
             Your asset registry is complete and encrypted.
           </p>
-          <p style={{ fontSize: 13, color: "#777" }}>
-            Will generation (PR-6) coming next. {estate.assets.length} assets recorded.
+          <p style={{ fontSize: 13, color: "#777", marginBottom: 16 }}>
+            {estate.assets.length} assets recorded. Generate your will draft next.
           </p>
+          <Link
+            href="/will"
+            style={{
+              display: "inline-block",
+              padding: "12px 24px",
+              background: "#1A1814",
+              color: "#F6F3EE",
+              textDecoration: "none",
+              fontSize: 13,
+              letterSpacing: "0.04em",
+            }}
+          >
+            Generate will draft →
+          </Link>
         </div>
       )}
     </div>

@@ -1,0 +1,56 @@
+{
+  "version": "0.1.0-placeholder",
+  "signed": false,
+  "clauses": [
+    {
+      "id": "PREAMBLE_001",
+      "branches": ["common"],
+      "template": "I, {{owner_name}}, born on {{owner_dob}}, being of sound mind and memory, hereby make, publish and declare this to be my last will and testament, revoking all former wills and codicils made by me."
+    },
+    {
+      "id": "REVOCATION_001",
+      "branches": ["common"],
+      "template": "I hereby revoke all prior wills, codicils and testamentary writings made by me at any time before the date of this will."
+    },
+    {
+      "id": "HINDU_SUCCESSION_001",
+      "branches": ["hindu"],
+      "template": "I declare that I am governed by Hindu personal law for the purposes of testamentary succession, and I exercise my testamentary freedom to bequeath my self-acquired property as set out herein."
+    },
+    {
+      "id": "CHRISTIAN_SUCCESSION_001",
+      "branches": ["christian"],
+      "template": "I declare that I am governed by Christian personal law for the purposes of testamentary succession, and I exercise my testamentary freedom to bequeath my property as set out herein."
+    },
+    {
+      "id": "PARSI_SUCCESSION_001",
+      "branches": ["parsi"],
+      "template": "I declare that I am governed by Parsi personal law for the purposes of testamentary succession, and I exercise my testamentary freedom to bequeath my property as set out herein."
+    },
+    {
+      "id": "MUSLIM_NOTICE_001",
+      "branches": ["muslim"],
+      "template": "I declare that I am governed by Muslim personal law. I understand that testamentary bequests to non-heirs are limited to one-third of my net estate after debts and funeral expenses. The bequests in this will do not exceed that limit."
+    },
+    {
+      "id": "BEQUEST_SPECIFIC_001",
+      "branches": ["common"],
+      "template": "I give and bequeath to {{beneficiary_name}} the following assets: {{asset_summary}}."
+    },
+    {
+      "id": "BEQUEST_RESIDUE_001",
+      "branches": ["common"],
+      "template": "I give, devise and bequeath the residue of my estate, after payment of debts, funeral expenses and the specific bequests above, to {{beneficiary_name}} in the proportion of {{residue_pct}} percent."
+    },
+    {
+      "id": "EXECUTOR_001",
+      "branches": ["common"],
+      "template": "I appoint {{executor_name}} as the sole executor of this will, with full power to administer my estate, collect assets, pay debts and distribute the estate according to this will."
+    },
+    {
+      "id": "DIGITAL_ASSETS_001",
+      "branches": ["common"],
+      "template": "I direct my executor to follow the digital asset instructions recorded in my Banyan asset registry, including: {{digital_instructions}}."
+    }
+  ]
+}

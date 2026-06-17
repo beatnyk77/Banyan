@@ -36,7 +36,9 @@ export default function DashboardLayout({
         <Link href="/intake" style={navLinkStyle}>
           Registry
         </Link>
-        <span style={{ ...navLinkStyle, color: "#CCC", cursor: "not-allowed" }}>Will</span>
+        <Link href="/will" style={navLinkStyle}>
+          Will
+        </Link>
         <span style={{ ...navLinkStyle, color: "#CCC", cursor: "not-allowed" }}>Vault</span>
       </nav>
       {children}

@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "owner": {
+    "name": "Vikram Mehta",
+    "dob": "1975-12-01",
+    "religion": "hindu"
+  },
+  "family": [
+    { "name": "Anita Mehta", "relationship": "spouse", "is_nominee": true },
+    { "name": "Rohan Mehta", "relationship": "son", "is_nominee": false }
+  ],
+  "assets": [
+    { "class": "bank", "institution": "Axis Bank" },
+    { "class": "mutual_fund", "institution": "SBI MF" },
+    { "class": "demat", "institution": "ICICI Direct" },
+    { "class": "crypto", "exchange": "WazirX" },
+    { "class": "digital_account", "platform": "Google" },
+    { "class": "vehicle", "registration": "MH-01-AB-1234" }
+  ],
+  "bequests": [
+    { "beneficiary_name": "Anita Mehta", "asset_refs": ["bank-0", "mutual_fund-0"], "residue_pct": 60 },
+    { "beneficiary_name": "Rohan Mehta", "asset_refs": ["demat-0"], "residue_pct": 40 }
+  ],
+  "digital_death_instructions": [
+    "Transfer Google account to Anita Mehta",
+    "Liquidate crypto holdings per exchange instructions"
+  ],
+  "completed_classes": ["bank", "mutual_fund", "demat", "crypto", "digital_account", "vehicle"]
+}

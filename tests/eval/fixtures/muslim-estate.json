@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "owner": {
+    "name": "Ahmed Khan",
+    "dob": "1958-11-03",
+    "religion": "muslim"
+  },
+  "family": [
+    { "name": "Fatima Khan", "relationship": "spouse", "is_nominee": true },
+    { "name": "Imran Khan", "relationship": "son", "is_nominee": false }
+  ],
+  "assets": [
+    { "class": "bank", "institution": "ICICI Bank" },
+    { "class": "property", "address": "House 12, Bandra, Mumbai" }
+  ],
+  "bequests": [
+    { "beneficiary_name": "Fatima Khan", "asset_refs": ["property-0"], "residue_pct": 30 }
+  ],
+  "digital_death_instructions": [],
+  "completed_classes": ["bank", "property"]
+}

@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "owner": {
+    "name": "Ramesh Kumar Sharma",
+    "dob": "1965-03-15",
+    "religion": "hindu"
+  },
+  "family": [
+    { "name": "Priya Sharma", "relationship": "spouse", "is_nominee": true },
+    { "name": "Arjun Sharma", "relationship": "son", "is_nominee": false }
+  ],
+  "assets": [
+    { "class": "bank", "institution": "HDFC Bank", "account_type": "savings" },
+    { "class": "property", "address": "Flat 4B, Andheri West, Mumbai" }
+  ],
+  "bequests": [
+    { "beneficiary_name": "Priya Sharma", "asset_refs": ["bank-0"], "residue_pct": 100 }
+  ],
+  "digital_death_instructions": [],
+  "completed_classes": ["bank", "property"]
+}

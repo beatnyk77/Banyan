@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "owner": {
+    "name": "Sunita Devi",
+    "dob": "1970-08-22",
+    "religion": "hindu"
+  },
+  "family": [
+    { "name": "Rajesh Kumar", "relationship": "spouse", "is_nominee": true },
+    { "name": "Meera Kumar", "relationship": "daughter", "is_nominee": false },
+    { "name": "Vikram Kumar", "relationship": "son", "is_nominee": false }
+  ],
+  "assets": [
+    { "class": "bank", "institution": "SBI", "account_type": "joint" },
+    { "class": "mutual_fund", "institution": "HDFC AMC", "folio": "MF-12345" },
+    { "class": "epf_ppf", "institution": "EPFO" }
+  ],
+  "bequests": [
+    { "beneficiary_name": "Rajesh Kumar", "asset_refs": ["bank-0"], "residue_pct": 50 },
+    { "beneficiary_name": "Meera Kumar", "asset_refs": [], "residue_pct": 25 },
+    { "beneficiary_name": "Vikram Kumar", "asset_refs": [], "residue_pct": 25 }
+  ],
+  "digital_death_instructions": ["Close Gmail account"],
+  "completed_classes": ["bank", "mutual_fund", "epf_ppf"]
+}

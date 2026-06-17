@@ -5,6 +5,7 @@ export interface ClauseSelection {
 
 export interface AssembledWill {
   clause_ids: string[];
+  params: Record<string, string>;
   clause_set_hash: string;
   clause_library_version: string;
   religion_branch: string;

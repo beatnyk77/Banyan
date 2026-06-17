@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "owner": {
+    "name": "Farrokh Irani",
+    "dob": "1955-01-09",
+    "religion": "parsi"
+  },
+  "family": [
+    { "name": "Dinaz Irani", "relationship": "spouse", "is_nominee": true }
+  ],
+  "assets": [
+    { "class": "bank", "institution": "Standard Chartered" },
+    { "class": "demat", "institution": "Zerodha", "dp_id": "DP-001" }
+  ],
+  "bequests": [
+    { "beneficiary_name": "Dinaz Irani", "asset_refs": ["demat-0"], "residue_pct": 100 }
+  ],
+  "digital_death_instructions": [],
+  "completed_classes": ["bank", "demat"]
+}

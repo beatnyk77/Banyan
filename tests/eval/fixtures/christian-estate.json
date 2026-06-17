@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "owner": {
+    "name": "Mary Thomas",
+    "dob": "1962-06-18",
+    "religion": "christian"
+  },
+  "family": [
+    { "name": "John Thomas", "relationship": "spouse", "is_nominee": true },
+    { "name": "Sarah Thomas", "relationship": "daughter", "is_nominee": false }
+  ],
+  "assets": [
+    { "class": "bank", "institution": "Federal Bank" },
+    { "class": "insurance", "institution": "LIC", "policy_no": "POL-98765" }
+  ],
+  "bequests": [
+    { "beneficiary_name": "Sarah Thomas", "asset_refs": ["insurance-0"], "residue_pct": 100 }
+  ],
+  "digital_death_instructions": [],
+  "completed_classes": ["bank", "insurance"]
+}
