@@ -39,7 +39,9 @@ export default function DashboardLayout({
         <Link href="/will" style={navLinkStyle}>
           Will
         </Link>
-        <span style={{ ...navLinkStyle, color: "#CCC", cursor: "not-allowed" }}>Vault</span>
+        <Link href="/vault" style={navLinkStyle}>
+          Vault
+        </Link>
       </nav>
       {children}
     </div>

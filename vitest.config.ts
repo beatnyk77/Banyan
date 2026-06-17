@@ -8,7 +8,7 @@ export default defineConfig({
     testTimeout: 30000,
     server: {
       deps: {
-        inline: ["libsodium-wrappers", "client-only"],
+        inline: ["libsodium-wrappers", "libsodium-wrappers-sumo", "client-only"],
       },
     },
   },
@@ -21,6 +21,10 @@ export default defineConfig({
       "libsodium-wrappers": path.resolve(
         __dirname,
         "node_modules/libsodium-wrappers/dist/modules/libsodium-wrappers.js"
+      ),
+      "libsodium-wrappers-sumo": path.resolve(
+        __dirname,
+        "node_modules/libsodium-wrappers-sumo/dist/modules-sumo/libsodium-wrappers.js"
       ),
     },
   },

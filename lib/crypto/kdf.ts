@@ -1,5 +1,5 @@
 import "client-only";
-import _sodium from "libsodium-wrappers";
+import _sodium from "libsodium-wrappers-sumo";
 import type { MasterKey } from "./types";
 
 export const KDF_OPSLIMIT = 2;
@@ -22,5 +22,5 @@ export async function deriveMasterKey(
 
 export async function generateSalt(): Promise<Uint8Array> {
   await _sodium.ready;
-  return _sodium.randombytes_buf(32);
+  return _sodium.randombytes_buf(_sodium.crypto_pwhash_SALTBYTES);
 }

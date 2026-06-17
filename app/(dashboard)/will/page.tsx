@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { decryptEstate } from "@/lib/intake/client-crypto";
 import { generatePreviewShare2, share2ToBase64url } from "@/lib/kit/preview-share2";
+import { takeShare2ForKit } from "@/lib/vault/client-vault";
 import type { AssembledWill } from "@/skills/clause-assembly-skill/types";
 import type { EstateJson } from "@/skills/intake-skill/estate-schema";
 
@@ -78,7 +79,8 @@ export default function WillPage() {
 
     try {
       const estate: EstateJson = await decryptEstate(encryptedEstate, passphrase);
-      const share2 = await generatePreviewShare2();
+      const sessionShare2 = takeShare2ForKit();
+      const share2 = sessionShare2 ?? (await generatePreviewShare2());
       const res = await fetch("/api/kit/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -86,7 +88,7 @@ export default function WillPage() {
           estate,
           will,
           share2ForKitB64: share2ToBase64url(share2),
-          preview: true,
+          preview: !sessionShare2,
         }),
       });
 
