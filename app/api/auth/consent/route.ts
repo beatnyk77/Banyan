@@ -1,20 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient, createServiceClient } from "@/lib/supabase/server";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function POST(req: NextRequest) {
-  const authClient = await createServerSupabaseClient();
+  const supabase = await createServerSupabaseClient();
   const {
     data: { user },
-  } = await authClient.auth.getUser();
+  } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { purpose } = await req.json();
-  const supabase = createServiceClient();
 
   const { error } = await supabase
     .from("users")
+    // Hand-written Database types lack Relationships metadata (see lib/supabase/server.ts).
+    // @ts-expect-error — payload matches users.Update
     .update({
       consent_given_at: new Date().toISOString(),
       consent_purpose: purpose ?? "succession_document_generation",
