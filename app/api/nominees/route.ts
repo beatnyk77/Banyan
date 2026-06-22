@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getPublicEnv, getServerEnv } from "@/lib/env";
+import { buildVetoLink, createNomineeInviteToken, createVetoToken } from "@/lib/nominee-tokens";
 import {
   buildInviteEmailText,
   buildInviteLink,
@@ -36,7 +38,7 @@ export async function GET() {
   const service = createServiceClient();
   const { data: nominees, error: nomineeError } = await service
     .from("nominees")
-    .select("id, full_name, email, phone, relationship, kyc_status, invite_token, invite_sent_at, created_at")
+    .select("id, full_name, email, phone, relationship, kyc_status, invite_sent_at, created_at")
     .eq("estate_id", persisted.estateId)
     .order("created_at", { ascending: false });
 
@@ -93,7 +95,7 @@ export async function POST(req: NextRequest) {
         kyc_status: "invited",
         invite_sent_at: new Date().toISOString(),
       })
-      .select("id, invite_token, full_name, email")
+      .select("id, full_name, email")
       .single();
 
     if (error || !nominee) {
@@ -103,28 +105,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-    const inviteLink = buildInviteLink(nominee.invite_token, baseUrl);
+    const { NEXT_PUBLIC_APP_URL } = getPublicEnv();
+    const accessToken = createNomineeInviteToken(nominee.id);
+    const inviteLink = buildInviteLink(accessToken, NEXT_PUBLIC_APP_URL);
     const emailContent = buildInviteEmailText({
       nomineeName: nominee.full_name,
       estateOwnerName: user.email ?? "the estate owner",
       inviteLink,
     });
 
-    if (process.env.RESEND_API_KEY) {
-      await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: "Banyan <notifications@banyan.fo>",
-          to: nominee.email,
-          subject: emailContent.subject,
-          text: emailContent.text,
-        }),
-      });
+    const { RESEND_API_KEY } = getServerEnv();
+    if (RESEND_API_KEY) {
+      try {
+        await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${RESEND_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: "Banyan <notifications@banyan.fo>",
+            to: nominee.email,
+            subject: emailContent.subject,
+            text: emailContent.text,
+          }),
+        });
+      } catch {
+        // Email failure should not block invite creation
+      }
     }
 
     return NextResponse.json({ nominee, inviteLink });
@@ -136,7 +144,7 @@ export async function POST(req: NextRequest) {
 
     const { data: event, error: fetchError } = await service
       .from("release_events")
-      .select("id, status, estate_id")
+      .select("id, status, estate_id, initiator_nominee_id")
       .eq("id", releaseEventId)
       .eq("estate_id", persisted.estateId)
       .single();
@@ -170,6 +178,57 @@ export async function POST(req: NextRequest) {
 
     if (updateError) {
       return NextResponse.json({ error: updateError.message }, { status: 500 });
+    }
+
+    if (nextStatus === "time_lock") {
+      const { data: otherNominees } = await service
+        .from("nominees")
+        .select("id, full_name, email")
+        .eq("estate_id", persisted.estateId)
+        .eq("kyc_status", "kyc_verified");
+
+      const { NEXT_PUBLIC_APP_URL, RESEND_API_KEY } = {
+        ...getPublicEnv(),
+        ...getServerEnv(),
+      };
+
+      for (const other of otherNominees ?? []) {
+        if (other.id === event.initiator_nominee_id) continue;
+
+        const vetoToken = createVetoToken({
+          nomineeId: other.id,
+          releaseEventId,
+        });
+        const vetoLink = buildVetoLink(vetoToken, NEXT_PUBLIC_APP_URL);
+
+        if (RESEND_API_KEY) {
+          try {
+            await fetch("https://api.resend.com/emails", {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${RESEND_API_KEY}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                from: "Banyan <notifications@banyan.fo>",
+                to: other.email,
+                subject: "Action required: estate release time-lock started",
+                text: [
+                  `Dear ${other.full_name},`,
+                  "",
+                  "An emergency release request has entered the 7-day time-lock period.",
+                  "As a verified nominee, you may veto this release:",
+                  vetoLink,
+                  "",
+                  "Banyan — Founder's Office & Co",
+                ].join("\n"),
+              }),
+            });
+          } catch {
+            // Non-blocking notification failure
+          }
+        }
+      }
     }
 
     return NextResponse.json({ ok: true, status: nextStatus });

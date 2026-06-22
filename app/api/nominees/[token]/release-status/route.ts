@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { resolveNomineeByAccessToken } from "@/lib/nominee/resolve";
 import { createServiceClient } from "@/lib/supabase/server";
 
 export async function GET(
@@ -6,18 +7,13 @@ export async function GET(
   { params }: { params: Promise<{ token: string }> }
 ) {
   const { token } = await params;
-  const supabase = createServiceClient();
+  const nominee = await resolveNomineeByAccessToken(token);
 
-  const { data: nominee, error: nomineeError } = await supabase
-    .from("nominees")
-    .select("id, estate_id, full_name, kyc_status")
-    .eq("invite_token", token)
-    .single();
-
-  if (nomineeError || !nominee) {
+  if (!nominee) {
     return NextResponse.json({ error: "Invalid or expired invite token" }, { status: 404 });
   }
 
+  const supabase = createServiceClient();
   const { data: events } = await supabase
     .from("release_events")
     .select("id, status, time_lock_expires_at, created_at, updated_at")
@@ -31,6 +27,7 @@ export async function GET(
       kyc_status: nominee.kyc_status,
     },
     release_events: events ?? [],
+    redirect: `/invite/${encodeURIComponent(token)}`,
   });
 }
 
@@ -39,15 +36,9 @@ export async function POST(
   { params }: { params: Promise<{ token: string }> }
 ) {
   const { token } = await params;
-  const supabase = createServiceClient();
+  const nominee = await resolveNomineeByAccessToken(token);
 
-  const { data: nominee, error: nomineeError } = await supabase
-    .from("nominees")
-    .select("id, estate_id, full_name, kyc_status")
-    .eq("invite_token", token)
-    .single();
-
-  if (nomineeError || !nominee) {
+  if (!nominee) {
     return NextResponse.json({ error: "Invalid or expired invite token" }, { status: 404 });
   }
 
@@ -63,6 +54,7 @@ export async function POST(
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   }
 
+  const supabase = createServiceClient();
   const { data: existing } = await supabase
     .from("release_events")
     .select("id, status")

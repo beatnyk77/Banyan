@@ -9,9 +9,9 @@ export function normalizeInviteEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
-export function buildInviteLink(token: string, baseUrl: string): string {
+export function buildInviteLink(accessToken: string, baseUrl: string): string {
   const base = baseUrl.replace(/\/$/, "");
-  return `${base}/api/nominees/${token}/release-status`;
+  return `${base}/invite/${encodeURIComponent(accessToken)}`;
 }
 
 export function buildInviteEmailText(params: {

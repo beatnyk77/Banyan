@@ -1,16 +1,3 @@
-const DIGILOCKER_STUB_BASE = "https://digilocker.gov.in/authorize";
-
-export function buildDigilockerKycUrl(params: {
-  nomineeId: string;
-  redirectUrl: string;
-}): string {
-  const url = new URL(DIGILOCKER_STUB_BASE);
-  url.searchParams.set("nominee_id", params.nomineeId);
-  url.searchParams.set("redirect_uri", params.redirectUrl);
-  url.searchParams.set("response_type", "code");
-  return url.toString();
-}
-
 export type KycStatus =
   | "pending"
   | "invited"

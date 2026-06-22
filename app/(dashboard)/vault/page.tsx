@@ -24,7 +24,6 @@ interface NomineeRow {
   full_name: string;
   email: string;
   kyc_status: string;
-  invite_token: string;
 }
 
 interface ReleaseEventRow {
