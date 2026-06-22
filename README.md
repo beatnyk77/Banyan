@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Banyan
 
-## Getting Started
+Family asset continuity platform by Founder's Office & Co.
 
-First, run the development server:
+Banyan guides users through a conversational intake to build an encrypted registry of assets, generates a religion-aware will draft with an offline execution kit, stores documents in a client-side encrypted vault, and releases access to verified nominees through a controlled emergency protocol.
+
+## Stack
+
+- **Next.js 16** (App Router) + React 19 + TypeScript (strict)
+- **Supabase** — auth, Postgres, storage, edge functions
+- **Razorpay** — checkout + webhooks
+- **Anthropic Claude** — conversational intake
+- **libsodium** — client-side encryption + Shamir 2-of-3 key ceremony
+
+## Local development
+
+### Prerequisites
+
+- Node.js 20+
+- [Supabase CLI](https://supabase.com/docs/guides/cli)
+- Razorpay test account (for billing flows)
+
+### Setup
+
+```bash
+npm install
+cp .env.local.example .env.local
+```
+
+Fill in `.env.local`:
+
+1. Start Supabase locally: `supabase start`
+2. Copy keys from `supabase status -o env` into the Supabase vars
+3. Generate escrow keys: `npm run generate:escrow-keys`
+4. Generate token secrets: `openssl rand -hex 32` (run twice for `NOMINEE_TOKEN_SECRET` and `VETO_TOKEN_SECRET`)
+5. Add Razorpay test keys and optional `ANTHROPIC_API_KEY`
+
+Apply migrations:
+
+```bash
+supabase db reset   # or: supabase migration up
+```
+
+Run the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Production build |
+| `npm run start` | Start production server |
+| `npm test` | Run unit tests (Vitest) |
+| `npm run test:db` | DB integration tests (requires local Supabase) |
+| `npm run generate:escrow-keys` | Generate NaCl escrow keypair |
 
-## Learn More
+## Environment variables
 
-To learn more about Next.js, take a look at the following resources:
+See [.env.local.example](.env.local.example) for the full list. Server routes validate required vars at runtime via `lib/env.ts`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Product flows
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Signup** → DPDP consent capture → protected dashboard
+2. **Intake** → conversational asset registry (encrypted client-side)
+3. **Will** → clause-library assembly → execution kit PDF download
+4. **Vault** → Shamir key ceremony → encrypted document storage → nominee invites
+5. **Billing** → Razorpay checkout with optional CA referral code
+6. **Pre-order** → Phase 0 landing-page checkout (₹1,999)
+7. **Nominee portal** → `/invite/[token]` — DigiLocker KYC + emergency release request
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+See [DEPLOY.md](DEPLOY.md) for production deployment to Vercel + Supabase Cloud.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Legal note
+
+Banyan generates will-ready documents and offline execution kits. It does not execute legally valid digital wills in India. Set `CLAUSE_LIBRARY_SIGNED=true` only after counsel signs the clause library in `skills/clause-assembly-skill/library/clauses.json`.
