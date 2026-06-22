@@ -8,7 +8,8 @@
     "start": "next start",
     "test": "vitest run",
     "test:db": "eval \"$(npx supabase status -o env 2>/dev/null)\" && vitest run tests/db",
-    "test:crypto": "vitest run tests/crypto"
+    "test:crypto": "vitest run tests/crypto",
+    "generate:escrow-keys": "npx tsx scripts/generate-escrow-keys.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.2",

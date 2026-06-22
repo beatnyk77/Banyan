@@ -1,4 +1,5 @@
 import libraryJson from "./clauses.json";
+import { isClauseLibrarySignedEnv } from "@/lib/env";
 
 export interface ClauseDefinition {
   id: string;
@@ -25,5 +26,9 @@ export function getAllClauseIds(): string[] {
 }
 
 export function isClauseLibrarySigned(): boolean {
-  return process.env.CLAUSE_LIBRARY_SIGNED === "true" && CLAUSE_LIBRARY.signed;
+  try {
+    return isClauseLibrarySignedEnv() && CLAUSE_LIBRARY.signed;
+  } catch {
+    return process.env.CLAUSE_LIBRARY_SIGNED === "true" && CLAUSE_LIBRARY.signed;
+  }
 }

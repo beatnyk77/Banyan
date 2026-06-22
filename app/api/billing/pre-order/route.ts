@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Razorpay from "razorpay";
 import { createClient } from "@supabase/supabase-js";
+import { getPublicEnv, getServerEnv } from "@/lib/env";
 
 export async function POST(req: NextRequest) {
   const { name, email, phone, referralCode } = await req.json();
@@ -9,9 +10,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "name and email are required" }, { status: 400 });
   }
 
+  const { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET } = getServerEnv();
   const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID!,
-    key_secret: process.env.RAZORPAY_KEY_SECRET!,
+    key_id: RAZORPAY_KEY_ID,
+    key_secret: RAZORPAY_KEY_SECRET,
   });
 
   const order = await razorpay.orders.create({
@@ -25,10 +27,9 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  const { NEXT_PUBLIC_SUPABASE_URL } = getPublicEnv();
+  const { SUPABASE_SERVICE_ROLE_KEY } = getServerEnv();
+  const supabase = createClient(NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   await supabase.from("pre_orders").insert({
     name,
@@ -42,6 +43,6 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({
     orderId: order.id,
-    key: process.env.RAZORPAY_KEY_ID,
+    key: RAZORPAY_KEY_ID,
   });
 }

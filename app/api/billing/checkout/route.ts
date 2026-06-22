@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerEnv } from "@/lib/env";
 import {
   createRazorpayOrder,
   getPlanAmountPaise,
@@ -72,7 +73,7 @@ export async function POST(req: NextRequest) {
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
-      key: process.env.RAZORPAY_KEY_ID,
+      key: getServerEnv().RAZORPAY_KEY_ID,
       plan,
       description: getPlanLabel(plan),
     });

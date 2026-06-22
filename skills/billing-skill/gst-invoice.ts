@@ -1,3 +1,4 @@
+import { getServerEnv } from "@/lib/env";
 import type { BillingPlan } from "./types";
 import { getPlanLabel } from "./razorpay";
 
@@ -57,7 +58,7 @@ export function buildGstInvoiceEmail(input: GstInvoiceInput): {
 }
 
 export async function sendGstInvoice(input: GstInvoiceInput): Promise<boolean> {
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = getServerEnv().RESEND_API_KEY;
   if (!apiKey) return false;
 
   const email = buildGstInvoiceEmail(input);

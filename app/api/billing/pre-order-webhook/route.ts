@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { createClient } from "@supabase/supabase-js";
+import { getPublicEnv, getServerEnv } from "@/lib/env";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const sig = req.headers.get("x-razorpay-signature") ?? "";
-  const secret = process.env.RAZORPAY_WEBHOOK_SECRET!;
+  const { RAZORPAY_WEBHOOK_SECRET: secret } = getServerEnv();
 
   const expected = crypto
     .createHmac("sha256", secret)
@@ -20,10 +21,9 @@ export async function POST(req: NextRequest) {
 
   if (event.event === "payment.captured") {
     const payment = event.payload.payment.entity;
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    const { NEXT_PUBLIC_SUPABASE_URL } = getPublicEnv();
+    const { SUPABASE_SERVICE_ROLE_KEY } = getServerEnv();
+    const supabase = createClient(NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     await supabase
       .from("pre_orders")

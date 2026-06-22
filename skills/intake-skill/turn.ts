@@ -68,7 +68,7 @@ export async function processIntakeTurn(
     };
   }
 
-  if (!process.env.ANTHROPIC_API_KEY) {
+  if (!process.env.ANTHROPIC_API_KEY?.trim()) {
     const result = fallbackTurn(input);
     return { ...result, estate };
   }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerEnv } from "@/lib/env";
 import { fulfillPaidPurchase } from "@/skills/billing-skill/fulfill";
 import { verifyWebhookSignature } from "@/skills/billing-skill/razorpay";
 import { createServiceClient } from "@/lib/supabase/server";
@@ -6,7 +7,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const signature = req.headers.get("x-razorpay-signature") ?? "";
-  const secret = process.env.RAZORPAY_WEBHOOK_SECRET ?? "";
+  const { RAZORPAY_WEBHOOK_SECRET: secret } = getServerEnv();
 
   if (!verifyWebhookSignature(body, signature, secret)) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });

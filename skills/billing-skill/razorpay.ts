@@ -1,12 +1,14 @@
 import crypto from "crypto";
 import Razorpay from "razorpay";
+import { getServerEnv } from "@/lib/env";
 import type { BillingPlan } from "./types";
 import { PLAN_PRICES_PAISE } from "./types";
 
 export function createRazorpayClient(): Razorpay {
+  const { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET } = getServerEnv();
   return new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID!,
-    key_secret: process.env.RAZORPAY_KEY_SECRET!,
+    key_id: RAZORPAY_KEY_ID,
+    key_secret: RAZORPAY_KEY_SECRET,
   });
 }
 

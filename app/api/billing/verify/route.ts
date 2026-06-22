@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerEnv } from "@/lib/env";
 import { fulfillPaidPurchase } from "@/skills/billing-skill/fulfill";
 import { verifyPaymentSignature } from "@/skills/billing-skill/razorpay";
 import { createServerSupabaseClient, createServiceClient } from "@/lib/supabase/server";
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing payment fields" }, { status: 400 });
   }
 
-  const secret = process.env.RAZORPAY_KEY_SECRET ?? "";
+  const { RAZORPAY_KEY_SECRET: secret } = getServerEnv();
   if (!verifyPaymentSignature({ orderId, paymentId, signature, secret })) {
     return NextResponse.json({ error: "Invalid payment signature" }, { status: 400 });
   }
